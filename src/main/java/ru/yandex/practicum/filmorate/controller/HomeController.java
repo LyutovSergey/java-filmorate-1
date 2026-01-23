@@ -22,4 +22,25 @@ public class HomeController {
                 </pre>
                 """;
     }
+
+    @GetMapping("favicon.ico")
+    public String faviconIco() {
+        return """
+                <p><br></p>
+        """;
+    }
+
+    @GetMapping(".well-known/appspecific/com.chrome.devtools.json")
+    public String devtools() {
+        return """
+                <p><br></p>
+        """;
+    }
+
+    @GetMapping("sw.js")
+    public String swjs() {
+        return """
+                <p><br></p>
+        """;
+    }
 }
