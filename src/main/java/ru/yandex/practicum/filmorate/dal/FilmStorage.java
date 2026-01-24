@@ -19,8 +19,8 @@ public interface FilmStorage {
 	/// Обновить данные фильма
 	Film updateFilm(Film film);
 
-	/// Получение id всех Фильмов
-	Collection<Long> getAllIds();
+	/// Проверить существование фильма в базе
+	boolean checkFilmIsNotPresent(Long filmId);
 
 	/// Получить топ фильмов
 	Collection<Film> getTop(int count);
@@ -30,6 +30,4 @@ public interface FilmStorage {
 
 	/// Убрать лайк
 	void removeLike(long filmId, long userId);
-
-	void reset();
 }

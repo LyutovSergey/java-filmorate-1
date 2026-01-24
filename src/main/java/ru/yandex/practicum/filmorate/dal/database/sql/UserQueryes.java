@@ -1,23 +1,6 @@
 package ru.yandex.practicum.filmorate.dal.database.sql;
 
 public class UserQueryes {
-	public static final String SQL_USERS_FIND_ALL_IDS = """
-			SELECT    id
-			FROM      users
-			ORDER BY  id;
-			""";
-
-	public static final String SQL_USERS_FIND_BY_EMAIL = """
-			SELECT    *
-			FROM      users
-			WHERE     email = ?
-			""";
-
-	public static final String SQL_USERS_FIND_BY_ID = """
-			SELECT    *
-			FROM      users
-			WHERE     id = ?
-			""";
 
 	public static final String SQL_USERS_INSERT = """
 			INSERT    INTO users (user_name, login, email, birthday)
@@ -44,12 +27,6 @@ public class UserQueryes {
 			AND       friend_id = ?
 			""";
 
-	public static final String SQL_USERS_FIND_FRIEND_IDS = """
-			SELECT    friend_id
-			FROM      friends
-			WHERE     user_id = ?
-			""";
-
 	public static final String SQL_USERS_FIND_ALL_USERS_AND_FRIENDS = """
 			SELECT    u.id         AS user_id,
 			          u.user_name  AS user_name,
@@ -60,13 +37,5 @@ public class UserQueryes {
 			FROM      users u
 			LEFT JOIN friends f ON u.id = f.user_id
 			ORDER BY  user_id
-			""";
-
-	public static final String SQL_USERS_RESET_DATA = """
-			DELETE    FROM users;
-			
-			ALTER     TABLE users
-			ALTER     COLUMN id
-			RESTART   WITH 1;
 			""";
 }

@@ -19,7 +19,6 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.servise.util.LikeAction;
 
 import java.util.*;
@@ -61,16 +60,17 @@ public class FilmService {
 			case REMOVE -> log.info("Удаление лайка пользователя id={} у фильма id={}.", userId, filmId);
 		}
 
-		Film film = filmStorage.findById(filmId).orElseThrow(() ->
-				new NotFoundException("Фильм с id=" + filmId + " не найден.")
-		);
-		User user = userStorage.findById(userId).orElseThrow(() ->
-				new NotFoundException("Пользователь с id=" + userId + " не найден.")
-		);
+		if (filmStorage.checkFilmIsNotPresent(filmId)) {
+			throw new NotFoundException("Фильм с id=" + filmId + " не найден.");
+		}
+
+		if (userStorage.checkUserIsNotPresent(userId)) {
+			throw new NotFoundException("Пользователь с id=" + userId + " не найден.");
+		}
 
 		switch (action) {
-			case SET -> filmStorage.setLike(film.getId(), user.getId());
-			case REMOVE -> filmStorage.removeLike(film.getId(), user.getId());
+			case SET -> filmStorage.setLike(filmId, userId);
+			case REMOVE -> filmStorage.removeLike(filmId, userId);
 		}
 	}
 

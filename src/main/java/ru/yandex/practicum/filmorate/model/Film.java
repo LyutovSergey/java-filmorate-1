@@ -21,7 +21,9 @@ public class Film {
 	private String name;
 	private String description;
 	private LocalDate releaseDate;
-	private Duration duration;
+
+	@Builder.Default
+	private Duration duration = Duration.ZERO;
 
 	@Builder.Default
 	private Set<Integer> genreIds = new HashSet<>();

@@ -54,18 +54,18 @@ public class UserService {
 				}
 
 				if (riendsOfFriend.contains(userId)) {
-					userStorage.addToFriends(userId, friendId);
+					userStorage.addFriend(userId, friendId);
 					log.info("Пользователи с id={} и id={} стали друзьями.", userId, friendId);
 				}
 
-				userStorage.addToFriends(userId, friendId);
+				userStorage.addFriend(userId, friendId);
 			}
 
 			case REMOVE -> {
 				if (! friendsOfUser.contains(friendId)) {
 					throw new NoContentException();
 				}
-				userStorage.removeFriends(userId, friendId);
+				userStorage.removeFriend(userId, friendId);
 			}
 		}
 	}
@@ -90,7 +90,6 @@ public class UserService {
 				.orElseThrow(() -> new NotFoundException("Пользователь не найден, обновлять нечего."));
 
 		logUserUpdate(request, oldUser);
-
 		User newUser = UserMapper.updateUserFields(oldUser, request);
 
 		try {
@@ -158,19 +157,13 @@ public class UserService {
 			throw new ParameterNotValidException(String.valueOf(userId1), "У пользователей должны быть разные id.");
 		}
 
-		Collection<Long> allIds = userStorage.getAllIds();
-
-		if (! allIds.contains(userId1)) {
+		if (userStorage.checkUserIsNotPresent(userId1)) {
 			throw new NotFoundException("Первый пользователь с id=" + userId1 + " не найден.");
 		}
 
-		if (! allIds.contains(userId2)) {
+		if (userStorage.checkUserIsNotPresent(userId2)) {
 			throw new NotFoundException("Второй пользователь с id=" + userId2 + " не найден.");
 		}
-	}
-
-	public void reset() {
-		userStorage.reset();
 	}
 
 	private void logUserUpdate(UserUpdateRequest request, User user) {

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.FilmStorage;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.SQLException;
@@ -28,38 +29,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	}
 
 	@Override
-	public Collection<Film> findAll() {
-		return findManyFilms(SQL_FILMS_FIND_ALL);
-	}
-
-	@Override
-	public Collection<Film> getTop(int top) {
-		return findManyFilms(SQL_FILMS_FIND_TOP, top);
-	}
-
-	@Override
-	public void setLike(long filmId, long userId) {
-		insert(SQL_FILMS_SET_LIKE, filmId, userId);
-	}
-
-	@Override
-	public void removeLike(long filmId, long userId) {
-		delete(SQL_FILMS_DELETE_LIKE, filmId, userId);
-	}
-
-	@Override
-	@Transactional
-	public Optional<Film> findById(long filmId) {
-		Optional<Film> filmOptional = findByIdInTable(filmId, "films");
-        filmOptional.ifPresent(film -> film.setGenreIds(new HashSet<>(getGenreIdsByFilmId(filmId))));
-
-		return filmOptional;
-	}
-
-	@Override
 	@Transactional
 	public Film createFilm(Film film) {
-		long id = insert(
+		long id = insertWithKeyHolder(
 				SQL_FILMS_INSERT,
 				film.getName(),
 				film.getDescription(),
@@ -73,21 +45,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 		return film;
 	}
 
-	private void insertGenreIds(Film film) {
-		Set<Integer> genreIds = film.getGenreIds();
-		if (genreIds.isEmpty()) {
-			return;
-		}
-		String placeholders = String.join(",",
-				Collections.nCopies(genreIds.size(), " (" + film.getId() + ", ?)")
-		);
-		String sql = "INSERT INTO GENRES_OF_FILMS (FILM_ID, GENRE_ID) VALUES" + placeholders;
-		jdbc.update(sql, genreIds.toArray());
-	}
-
 	@Override
 	public Film updateFilm(Film film) {
-		update(
+		updateWithControl(
 				SQL_FILMS_UPDATE,
 				film.getName(),
 				film.getDescription(),
@@ -100,13 +60,49 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	}
 
 	@Override
-	public Collection<Long> getAllIds() {
-		return findIdsOfLong(SQL_FILMS_FIND_ALL_IDS);
+	@Transactional
+	public Optional<Film> findById(long filmId) {
+		Optional<Film> filmOptional = findOneByIdInTable(filmId, "films");
+		filmOptional.ifPresent(film -> film.setGenreIds(getGenreIdsByFilmId(filmId)));
+
+		return filmOptional;
 	}
 
 	@Override
-	public void reset() {
-		update(SQL_FILMS_RESET_DATA);
+	public Collection<Film> findAll() {
+		return findManyFilms(SQL_FILMS_FIND_ALL);
+	}
+
+	@Override
+	public void setLike(long filmId, long userId) {
+		updateWithControl(SQL_FILMS_SET_LIKE, filmId, userId);
+	}
+
+	@Override
+	public void removeLike(long filmId, long userId) {
+		updateWithControl(SQL_FILMS_DELETE_LIKE, filmId, userId);
+	}
+
+	@Override
+	public Collection<Film> getTop(int top) {
+		return findManyFilms(SQL_FILMS_FIND_TOP, top);
+	}
+
+	@Override
+	public boolean checkFilmIsNotPresent(Long filmId) {
+		return checkIdIsNotPresentInTable(filmId, "films");
+	}
+
+	private void insertGenreIds(Film film) {
+		Set<Integer> genreIds = film.getGenreIds();
+		if (genreIds.isEmpty()) {
+			return;
+		}
+		String placeholders = String.join(",",
+				Collections.nCopies(genreIds.size(), " (" + film.getId() + ", ?)")
+		);
+		String sql = "INSERT INTO GENRES_OF_FILMS (FILM_ID, GENRE_ID) VALUES" + placeholders;
+		updateWithControl(sql, genreIds.toArray());
 	}
 
 	private Collection<Film> findManyFilms(String query, Object... params) {
@@ -120,7 +116,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 					try {
 						return rowMapper.mapRow(rs, rowNum.getAndIncrement());
 					} catch (SQLException e) {
-						throw new RuntimeException(e);
+						throw new InternalServerException(
+								"Не удалось получить все фильмы из базы.\n" + e.getMessage()
+						);
 					}
 				});
 
@@ -139,7 +137,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 		}, params);
 	}
 
-	private Collection<Integer> getGenreIdsByFilmId(long filmId) {
-		return findIdsOfInt(SQL_FILMS_FIND_GENREIDS_BY_FILM_ID, filmId);
+	private Set<Integer> getGenreIdsByFilmId(long filmId) {
+		return findColumnByQuery(SQL_FILMS_FIND_GENREIDS_BY_FILM_ID, Integer.class, filmId);
 	}
+
 }

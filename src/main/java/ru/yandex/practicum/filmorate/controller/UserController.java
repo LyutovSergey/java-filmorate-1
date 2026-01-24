@@ -59,9 +59,4 @@ public class UserController {
 	public void removeFromFriends(@PathVariable long userId, @PathVariable long friendId) {
 		userService.changeFriends(FriendsAction.REMOVE, userId, friendId);
 	}
-
-	@DeleteMapping("/reset")
-	public void resetUserData() {
-		userService.reset();
-	}
 }

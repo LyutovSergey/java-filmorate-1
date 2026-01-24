@@ -21,7 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
 	private final IdentifyService identifyService;
 
 	@Override
-	public Optional<User> findById(long id)  {
+	public Optional<User> findById(long id) {
 		return users.values().stream().filter(u -> u.getId().equals(id)).findFirst();
 	}
 
@@ -38,28 +38,24 @@ public class InMemoryUserStorage implements UserStorage {
 	}
 
 	@Override
+	public boolean checkUserIsNotPresent(Long userId) {
+		return users.containsKey(userId);
+	}
+
+	@Override
 	public User updateUser(User user) {
 		users.put(user.getId(), user);
 		return user;
 	}
 
 	@Override
-	public void addToFriends(long userId, long friendId) {
+	public void addFriend(long userId, long friendId) {
 		throw new MethodNotImplementedException();
 	}
 
 	@Override
-	public void removeFriends(long userId, long friendId) {
+	public void removeFriend(long userId, long friendId) {
 		throw new MethodNotImplementedException();
-	}
-
-	public Collection<Long> getAllIds() {
-		return users.keySet();
-	}
-
-	@Override
-	public void reset() {
-		users.clear();
 	}
 
 	@Override

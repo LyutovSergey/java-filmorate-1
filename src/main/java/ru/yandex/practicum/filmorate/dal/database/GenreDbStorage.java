@@ -21,7 +21,7 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 
 	@Override
 	public Optional<Genre> getGenreById(long genreId) {
-		return findByIdInTable(genreId, "genres");
+		return findOneByIdInTable(genreId, "genres");
 	}
 
 	@Override
@@ -30,27 +30,11 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 	}
 
 	@Override
-	public Set<Genre> getGenresByGenreIds(Set<Integer> genreIds) {
-		String placeholders = String.join(",", Collections.nCopies(genreIds.size(), "?"));
-		return new HashSet<>(
-				findMany(
-						"SELECT * FROM GENRES WHERE id IN (" + placeholders + ")",
-						genreIds.toArray()
-				)
-		);
-	}
-
-	@Override
-	public Set<Integer> getAllGenreIds() {
-		return new HashSet<>(findAllIntIdsInTable("genres"));
-	}
-
-	@Override
 	public Map<Integer, Genre> getMapOfAllGenres() {
-		Map<Integer, Genre> map = new HashMap<>();
-		 jdbc.query("SELECT * FROM genres", rowMapper)
-				.forEach(genre -> map.put(genre.getId(), genre));
-		 return map;
+		Map<Integer, Genre> allGenres = new HashMap<>();
+		 findAllInTable("genres")
+				.forEach(genre -> allGenres.put(genre.getId(), genre));
+		 return allGenres;
 	}
 
 }

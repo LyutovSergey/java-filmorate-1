@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.UserStorage;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.SQLException;
@@ -27,7 +29,41 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 	}
 
 	@Override
-	public List<User> findAll() {
+	public User createUser(User user) {
+		long id = insertWithKeyHolder(
+				SQL_USERS_INSERT,
+				user.getName(),
+				user.getLogin(),
+				user.getEmail(),
+				user.getBirthday()
+		);
+		user.setId(id);
+		return user;
+	}
+
+	@Override
+	public User updateUser(User user) {
+		updateWithControl(
+				SQL_USERS_UPDATE,
+				user.getName(),
+				user.getLogin(),
+				user.getEmail(),
+				user.getBirthday(),
+				user.getId()
+		);
+		return user;
+	}
+
+	@Override
+	@Transactional
+	public Optional<User> findById(long userId) {
+		Optional<User> userOptional = findOneByIdInTable(userId, "users");
+		userOptional.ifPresent(user -> user.setFriendsIds(getFriendIds(userId)));
+		return userOptional;
+	}
+
+	@Override
+	public Collection<User> findAll() {
 		return jdbc.query(SQL_USERS_FIND_ALL_USERS_AND_FRIENDS, rs -> {
 			Map<Long, User> users = new LinkedHashMap<>();
 			AtomicInteger rowNum = new AtomicInteger();
@@ -38,7 +74,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 					try {
 						return rowMapper.mapRow(rs, rowNum.getAndIncrement());
 					} catch (SQLException e) {
-						throw new RuntimeException(e);
+						throw new InternalServerException(
+								"Не удалось получить всех пользователей из базы.\n" + e.getMessage()
+						);
 					}
 				});
 
@@ -53,41 +91,8 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 	}
 
 	@Override
-	public User createUser(User user) {
-		long id = insert(
-				SQL_USERS_INSERT,
-				user.getName(),
-				user.getLogin(),
-				user.getEmail(),
-				user.getBirthday()
-		);
-		user.setId(id);
-		return user;
-	}
-
-	@Override
-	public Optional<User> findById(long userId) {
-		Optional<User> userOptional = findOne(SQL_USERS_FIND_BY_ID, userId);
-		userOptional.ifPresent(user -> user.setFriendsIds(getFriendIds(userId)));
-		return userOptional;
-	}
-
-	@Override
-	public User updateUser(User user) {
-		update(
-				SQL_USERS_UPDATE,
-				user.getName(),
-				user.getLogin(),
-				user.getEmail(),
-				user.getBirthday(),
-				user.getId()
-		);
-		return user;
-	}
-
-	@Override
-	public void addToFriends(long userId, long friendId) {
-		insertSimple(
+	public void addFriend(long userId, long friendId) {
+		updateWithControl(
 				SQL_USERS_ADD_FRIENDS,
 				userId,
 				friendId
@@ -95,22 +100,19 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 	}
 
 	@Override
-	public void removeFriends(long userId, long friendId) {
-		delete(SQL_USERS_DELETE_FRIENDS, userId, friendId);
-	}
-
-	@Override
-	public Collection<Long> getAllIds() {
-		return findIdsOfLong(SQL_USERS_FIND_ALL_IDS);
+	public void removeFriend(long userId, long friendId) {
+		updateWithControl(SQL_USERS_DELETE_FRIENDS, userId, friendId);
 	}
 
 	@Override
 	public Set<Long> getFriendIds(long userId) {
-		return new HashSet<>(findIdsOfLong(SQL_USERS_FIND_FRIEND_IDS, userId));
+		String sql = "SELECT friend_id FROM friends WHERE user_id = ?";
+		return findColumnByQuery(sql, Long.class, userId);
 	}
 
 	@Override
-	public void reset() {
-		update(SQL_USERS_RESET_DATA);
+	public boolean checkUserIsNotPresent(Long userId) {
+		return checkIdIsNotPresentInTable(userId, "users");
 	}
+
 }

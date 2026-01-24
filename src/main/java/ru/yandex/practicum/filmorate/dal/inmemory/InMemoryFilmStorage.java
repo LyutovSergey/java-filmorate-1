@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.MethodNotImplementedException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.servise.util.IdentifyService;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -46,8 +45,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 	}
 
 	@Override
-	public Collection<Long> getAllIds() {
-		return films.keySet();
+	public boolean checkFilmIsNotPresent(Long filmId) {
+		return films.containsKey(filmId);
 	}
 
 	@Override
@@ -56,17 +55,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 	}
 
 	@Override
-	public void reset() {
-		films.clear();
-	}
-
-	@Override
 	public void removeLike(long filmId, long userId) {
-
+		throw new MethodNotImplementedException();
 	}
 
 	@Override
 	public void setLike(long filmId, long userId) {
-
+		throw new MethodNotImplementedException();
 	}
 }

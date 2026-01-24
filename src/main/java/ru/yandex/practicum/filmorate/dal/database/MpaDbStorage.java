@@ -24,7 +24,7 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> implements MpaStorage {
 
 	@Override
 	public Optional<Mpa> getMpaById(long mpaId) {
-		return findByIdInTable(mpaId, "mpa");
+		return findOneByIdInTable(mpaId, "mpa");
 	}
 
 	@Override
@@ -34,10 +34,10 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> implements MpaStorage {
 
 	@Override
 	public Map<Integer, Mpa> getMapOfAllMpa() {
-		Map<Integer, Mpa> map = new HashMap<>();
-		jdbc.query("SELECT * FROM mpa", rowMapper)
-				.forEach(mpa -> map.put(mpa.getId(), mpa));
-		return map;
+		Map<Integer, Mpa> allMpa = new HashMap<>();
+		findAllInTable("mpa")
+				.forEach(mpa -> allMpa.put(mpa.getId(), mpa));
+		return allMpa;
 	}
 
 }

@@ -16,21 +16,18 @@ public interface UserStorage {
 	/// Добавить нового пользователя
 	User createUser(User user);
 
+	/// Проверить существование пользователя в базе
+	boolean checkUserIsNotPresent(Long userId);
+
 	/// Обновить данные пользователя
 	User updateUser(User user);
 
 	/// Добавить в друзья
-	void addToFriends(long userId, long friendId);
+	void addFriend(long userId, long friendId);
 
 	/// Удалить из друзей
-	void removeFriends(long userId, long friendId);
-
-	/// Получение id всех пользователей
-	Collection<Long> getAllIds();
+	void removeFriend(long userId, long friendId);
 
 	/// Получить список id друзей
 	Collection<Long> getFriendIds(long userId);
-
-	/// Очистить данные
-	void reset();
 }

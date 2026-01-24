@@ -16,16 +16,15 @@ public class BaseDbStorage<T> {
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> rowMapper;
 
-    protected Optional<T> findOne(String query, Object... params) {
+    protected <E> Set<E> findColumnByQuery(String query, Class<E> objectClass, Object... params) {
         try {
-            T result = jdbc.queryForObject(query, rowMapper, params);
-            return Optional.ofNullable(result);
+            return new HashSet<>(jdbc.queryForList(query, objectClass, params));
         } catch (EmptyResultDataAccessException ignored) {
-            return Optional.empty();
+            return HashSet.newHashSet(0);
         }
     }
 
-    protected Optional<T> findByIdInTable(long id, String tableName) {
+    protected Optional<T> findOneByIdInTable(long id, String tableName) {
         return jdbc.query("SELECT * FROM " + tableName + " WHERE id = ?", rowMapper, id)
                 .stream()
                 .findFirst();
@@ -37,27 +36,12 @@ public class BaseDbStorage<T> {
                 .toList();
     }
 
-    protected Collection<Long> findAllLongIdsInTable(String tableName) {
-        return jdbc.queryForList("SELECT id FROM " + tableName + " ORDER BY id", Long.class)
-                .stream()
-                .toList();
+    protected boolean checkIdIsNotPresentInTable(long id, String tableName) {
+        String sql = "SELECT ID FROM " + tableName + " WHERE ID = ?";
+        return jdbc.queryForList(sql, Long.class, id).isEmpty();
     }
 
-    protected Collection<Integer> findAllIntIdsInTable(String tableName) {
-        return jdbc.queryForList("SELECT id FROM " + tableName + " ORDER BY id", Integer.class)
-                .stream()
-                .toList();
-    }
-
-    protected List<T> findMany(String query, Object... params) {
-        return jdbc.query(query, rowMapper, params);
-    }
-
-    public void delete(String query, Object... params) {
-        jdbc.update(query, params);
-    }
-
-    protected long insert(String query, Object... params) {
+    protected long insertWithKeyHolder(String query, Object... params) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
             PreparedStatement ps = connection
@@ -76,30 +60,10 @@ public class BaseDbStorage<T> {
         }
     }
 
-    protected void insertSimple(String query, Object... params) {
-        jdbc.update(query, params);
-    }
-
-    protected void update(String query, Object... params) {
+    protected void updateWithControl(String query, Object... params) {
         int rowsUpdated = jdbc.update(query, params);
         if (rowsUpdated == 0) {
             throw new InternalServerException("Не удалось обновить данные");
-        }
-    }
-
-    protected Collection<Long> findIdsOfLong(String query, Object... params) {
-        try {
-            return jdbc.queryForList(query, Long.class, params);
-        } catch (EmptyResultDataAccessException ignored) {
-            return new ArrayList<>();
-        }
-    }
-
-    protected Collection<Integer> findIdsOfInt(String query, Object... params) {
-        try {
-            return jdbc.queryForList(query, Integer.class, params);
-        } catch (EmptyResultDataAccessException ignored) {
-            return new ArrayList<>();
         }
     }
 }
