@@ -29,7 +29,13 @@ The Filmorate project — это приложение для работы с б�
 `mvn package`  
 `sudo docker build -t filmorate-image .`  
 `sudo docker run --name filmorate -p 8080:8080 filmorate-image`  
-- для остановки `sudo docker stop filmorate`    
+- для остановки `sudo docker stop filmorate`  
+### Работа с приложением (Working with the app)
+Для работы с приложением используйте REST-клиент
+- Postman
+- Insomnia
+- RestFox
+- и подобные
 ### Примеры пользовательских запросов (Request Examples)
 ![ExamplesOfRequests](ExamplesOfRequests.png)
 ### Архитектура и структура проекта (Architecture and Project Structure) 
