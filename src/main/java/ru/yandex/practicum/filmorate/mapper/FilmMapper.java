@@ -49,7 +49,7 @@ public final class FilmMapper {
 
 	public static Film updateFilmFields(Film film, FilmUpdateRequest request) {
 
-		if (request.hasNname()) {
+		if (request.hasName()) {
 			film.setName(request.getName());
 		}
 

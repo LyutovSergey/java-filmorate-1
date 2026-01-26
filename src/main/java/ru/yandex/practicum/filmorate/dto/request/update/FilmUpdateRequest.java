@@ -37,7 +37,7 @@ public class FilmUpdateRequest {
 
 	private Mpa mpa;
 
-	public boolean hasNname() {
+	public boolean hasName() {
 		return name != null;
 	}
 

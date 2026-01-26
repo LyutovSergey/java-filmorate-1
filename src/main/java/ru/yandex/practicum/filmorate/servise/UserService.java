@@ -14,7 +14,9 @@ import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.servise.util.FriendsAction;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -151,24 +153,22 @@ public class UserService {
 	}
 
 	private void logUserUpdate(UserUpdateRequest request, User user) {
-		StringBuilder updatedData = new StringBuilder();
-		updatedData.append("[");
+		List<String> updatedFields = new ArrayList<>();
+
 		if (request.hasNname() && !request.getName().equals(user.getName())) {
-			updatedData.append("имя").append(", ");
+			updatedFields.add("имя");
 		}
 		if (request.hasEmail() && !request.getEmail().equals(user.getEmail())) {
-			updatedData.append("электронная почта").append(", ");
+			updatedFields.add("электронная почта");
 		}
 		if (request.hasLogin() && !request.getLogin().equals(user.getLogin())) {
-			updatedData.append("логин").append(", ");
+			updatedFields.add("логин");
 		}
 		if (request.hasBirthday() && !request.getBirthday().isEqual(user.getBirthday())) {
-			updatedData.append("дата рождения").append(", ");
+			updatedFields.add("дата рождения");
 		}
-		if (updatedData.length() > 2) {
-			updatedData.setLength(updatedData.length() - 2);
-		}
-		updatedData.append("]");
-		log.info("Данные для обновления: {}", updatedData);
+
+		String updatedData = String.join(", ", updatedFields);
+		log.info("Данные для обновления: [{}]", updatedData);
 	}
 }

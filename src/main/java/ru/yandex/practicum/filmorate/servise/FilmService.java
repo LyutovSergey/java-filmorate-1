@@ -131,7 +131,7 @@ public class FilmService {
 		log.info("Обновление данных о фильме с id={}", request.getId());
 
 		Film oldFilm = filmStorage.findById(request.getId())
-				.orElseThrow(() -> new NotFoundException("Фильм не найден, обновлять нечего."));
+				.orElseThrow(() -> new NotFoundException("Фильм с id=" + request.getId() + " не найден."));
 
 		logFilmUpdate(request, oldFilm);
 
@@ -173,33 +173,32 @@ public class FilmService {
 	}
 
 	private void logFilmUpdate(FilmUpdateRequest request, Film film) {
-		StringBuilder updatedData = new StringBuilder();
-		updatedData.append("[");
-		if (request.hasNname() && !film.getName().equals(request.getName())) {
-			updatedData.append("название").append(", ");
+		List<String> updatedFields = new ArrayList<>();
+
+		if (request.hasName() && !film.getName().equals(request.getName())) {
+			updatedFields.add("название");
 		}
 		if (request.hasDescription() && !film.getDescription().equals(request.getDescription())) {
-			updatedData.append("описание").append(", ");
+			updatedFields.add("описание");
 		}
 		if (request.hasReleaseDate() && !film.getReleaseDate().equals(request.getReleaseDate())) {
-			updatedData.append("дата релиза").append(", ");
+			updatedFields.add("дата релиза");
 		}
 		if (request.hasDuration() && !film.getDuration().minus(request.getDuration()).isZero()) {
-			updatedData.append("продолжительность").append(", ");
+			updatedFields.add("продолжительность");
 		}
 		if (request.hasMpa() && !film.getMpaId().equals(request.getMpa().getId())) {
-			updatedData.append("рейтинг MPAA").append(", ");
+			updatedFields.add("рейтинг MPAA");
 		}
 		if (request.hasGenres() && !request.getGenres().stream()
 				.map(Genre::getId).allMatch(film.getGenreIds()::contains)
 		) {
-			updatedData.append("жанры").append(", ");
+			updatedFields.add("жанры");
 		}
-		if (updatedData.length() > 2) {
-			updatedData.setLength(updatedData.length() - 2);
-		}
-		updatedData.append("]");
-		log.info("Данные для обновления: {}", updatedData);
+
+		String updatedData = String.join(", ", updatedFields);
+		log.info("Данные для обновления: [{}]", updatedData);
 	}
+
 
 }
