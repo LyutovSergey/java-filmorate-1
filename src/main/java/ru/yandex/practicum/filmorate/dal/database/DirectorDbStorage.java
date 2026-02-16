@@ -1,0 +1,53 @@
+package ru.yandex.practicum.filmorate.dal.database;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.DirectorStorage;
+import ru.yandex.practicum.filmorate.exception.MethodNotImplementedException;
+import ru.yandex.practicum.filmorate.model.Director;
+
+import java.util.Collection;
+import java.util.Optional;
+
+@Repository
+@Qualifier("directorDbStorage")
+public class DirectorDbStorage extends BaseDbStorage<Director> implements DirectorStorage {
+
+	public DirectorDbStorage(
+			JdbcTemplate jdbc,
+			@Qualifier("directorRowMapper") RowMapper<Director> rowMapper
+	) {
+		super(jdbc, rowMapper);
+	}
+
+	@Override
+	public Optional<Director> findById(long id) {
+		return findOneByIdInTable(id, "directors");
+	}
+
+	@Override
+	public Collection<Director> findAll() {
+		// todo
+		throw new MethodNotImplementedException();
+	}
+
+	@Override
+	public Director createDirector(Director director) {
+		// todo
+		throw new MethodNotImplementedException();
+	}
+
+	@Override
+	public Director updateDirector(Director director) {
+		// todo
+		throw new MethodNotImplementedException();
+	}
+
+	@Override
+	public void deleteDirector(Director director) {
+		// todo
+		throw new MethodNotImplementedException();
+	}
+}
