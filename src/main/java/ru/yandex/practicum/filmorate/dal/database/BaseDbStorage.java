@@ -66,4 +66,17 @@ public class BaseDbStorage<T> {
             throw new InternalServerException("Не удалось обновить данные");
         }
     }
+
+    protected List<T> findManyByQuery(String query, Object... params) {
+        return jdbc.query(query, rowMapper, params);
+    }
+
+    protected Optional<T> findOneByQuery(String query, Object... params) {
+        try {
+            T result = jdbc.queryForObject(query, rowMapper, params);
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException ignored) {
+            return Optional.empty();
+        }
+    }
 }

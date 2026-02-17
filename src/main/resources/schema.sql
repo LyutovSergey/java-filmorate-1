@@ -85,13 +85,28 @@ CREATE TABLE reviews (
                          useful      bigint NOT NULL DEFAULT 0
 );
 
--- Добавление внешних ключей
+
 ALTER TABLE reviews ADD CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id)
     REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE reviews ADD CONSTRAINT fk_reviews_film_id FOREIGN KEY (film_id)
     REFERENCES films (id) ON DELETE CASCADE;
 
--- Индексы для быстрого поиска отзывов по фильму или автору
+
 CREATE INDEX IF NOT EXISTS idx_reviews_film_id ON reviews (film_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews (user_id);
+
+-- Добавление таблицы Лайков для Отзывов
+CREATE TABLE review_likes (
+                              review_id   bigint NOT NULL,
+                              user_id     bigint NOT NULL,
+                              is_like     boolean NOT NULL,
+                              PRIMARY KEY (review_id, user_id)
+);
+
+ALTER TABLE review_likes ADD CONSTRAINT fk_review_likes_review_id FOREIGN KEY (review_id)
+    REFERENCES reviews (id);
+
+ALTER TABLE review_likes ADD CONSTRAINT fk_review_likes_user_id FOREIGN KEY (user_id)
+    REFERENCES users (id);
+CREATE INDEX IF NOT EXISTS idx_review_likes_review_id ON review_likes (review_id);
