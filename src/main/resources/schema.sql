@@ -75,3 +75,23 @@ CREATE INDEX IF NOT EXISTS idx_friends_friend_id ON friends (friend_id);
 
 CREATE INDEX IF NOT EXISTS idx_films_film_name ON films (film_name);
 
+-- Добавление таблицы Отзывов
+CREATE TABLE reviews (
+                         id          bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                         content     varchar(2048) NOT NULL,
+                         is_positive boolean NOT NULL,
+                         user_id     bigint NOT NULL,
+                         film_id     bigint NOT NULL,
+                         useful      bigint NOT NULL DEFAULT 0
+);
+
+-- Добавление внешних ключей
+ALTER TABLE reviews ADD CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id)
+    REFERENCES users (id) ON DELETE CASCADE;
+
+ALTER TABLE reviews ADD CONSTRAINT fk_reviews_film_id FOREIGN KEY (film_id)
+    REFERENCES films (id) ON DELETE CASCADE;
+
+-- Индексы для быстрого поиска отзывов по фильму или автору
+CREATE INDEX IF NOT EXISTS idx_reviews_film_id ON reviews (film_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_user_id ON reviews (user_id);
