@@ -32,8 +32,7 @@ public class FilmService {
 
 	private Map<Integer, Mpa> mpas;
 	private Map<Integer, Genre> genres;
-
-	private EventService eventService;
+	private final EventService eventService;
 
 	@Autowired
 	public FilmService(

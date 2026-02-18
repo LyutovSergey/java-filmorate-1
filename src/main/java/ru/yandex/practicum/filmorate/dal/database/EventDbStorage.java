@@ -17,8 +17,7 @@ public class EventDbStorage extends BaseDbStorage<Event> implements EventStorage
     private static final String GET_USER_FEEDS =
             "SELECT * FROM events " +
                     "WHERE user_id = ? " +
-                    "OR entity_id = ? " +
-                    "ORDER BY created_at DESC;";
+                    "ORDER BY created_at;";
 
     private static final String ADD_USER_EVENT =
             "INSERT INTO events (user_id, created_at, event_type, operation, entity_id) VALUES (?, ?, ?, ?, ?);";
@@ -30,7 +29,7 @@ public class EventDbStorage extends BaseDbStorage<Event> implements EventStorage
 
     @Override
     public Collection<Event> getAllEventsByUserId(long userId) {
-        return findManyByQuery(GET_USER_FEEDS, userId, userId);
+        return findManyByQuery(GET_USER_FEEDS, userId);
     }
 
     public Event addEvent(Event event) {
