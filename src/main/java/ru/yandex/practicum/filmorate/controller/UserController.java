@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.dto.request.update.UserUpdateRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.servise.util.FriendsAction;
 import ru.yandex.practicum.filmorate.servise.UserService;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 
 import java.util.Collection;
 
@@ -64,5 +65,9 @@ public class UserController {
 	@GetMapping("/{id}/feed")
 	public Collection<EventDto> getUserEvents(@PathVariable(name = "id") long userId) {
 		return userService.getUserEvents(userId);
+    
+	@GetMapping("/{id}/recommendations")
+	public Collection<FilmDto> getRecommendations(@PathVariable long id) {
+		return userService.getRecommendations(id);
 	}
 }
