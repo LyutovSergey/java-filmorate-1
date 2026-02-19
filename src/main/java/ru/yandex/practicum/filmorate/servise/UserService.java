@@ -35,7 +35,7 @@ public class UserService {
 
 	@Autowired
 	private EventService eventService;
-  
+
 	@Qualifier("filmDbStorage")
 	private FilmStorage filmStorage;
 
@@ -78,7 +78,7 @@ public class UserService {
 			}
 
 			case REMOVE -> {
-				if (! friendsOfUser.contains(friendId)) {
+				if (!friendsOfUser.contains(friendId)) {
 					throw new NoContentException();
 				}
 				userStorage.removeFriend(userId, friendId);
@@ -88,7 +88,7 @@ public class UserService {
 	}
 
 	public UserDto create(UserCreateRequest request) {
-		log.info("Добавление нового пользователя login={}.",  request.getLogin());
+		log.info("Добавление нового пользователя login={}.", request.getLogin());
 		User user = UserMapper.mapToUser(request);
 
 		try {

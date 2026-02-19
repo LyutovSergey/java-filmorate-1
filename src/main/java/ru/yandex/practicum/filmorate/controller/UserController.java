@@ -65,7 +65,8 @@ public class UserController {
 	@GetMapping("/{id}/feed")
 	public Collection<EventDto> getUserEvents(@PathVariable(name = "id") long userId) {
 		return userService.getUserEvents(userId);
-    
+	}
+
 	@GetMapping("/{id}/recommendations")
 	public Collection<FilmDto> getRecommendations(@PathVariable long id) {
 		return userService.getRecommendations(id);
