@@ -213,4 +213,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	public Collection<Film> getCommonLikedFilms(long userId, long friendId) {
 		return findManyFilms(SQL_FILMS_FIND_COMMON_LIKED, userId, friendId);
 	}
+
+	@Override
+	public void removeFilm(long filmId) {
+		updateWithControl("DELETE FROM films WHERE id = ?", filmId);
+	}
 }

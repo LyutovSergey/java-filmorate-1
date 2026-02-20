@@ -86,4 +86,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 	public Collection<Film> getCommonLikedFilms(long userId, long friendId) {
 		throw new MethodNotImplementedException();
 	}
+
+	@Override
+	public void removeFilm(long filmId) {
+		throw new MethodNotImplementedException();
+	}
 }

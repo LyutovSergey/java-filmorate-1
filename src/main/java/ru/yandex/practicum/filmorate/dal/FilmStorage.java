@@ -43,4 +43,7 @@ public interface FilmStorage {
 	Map<Long, Set<Long>> getAllLikes();
 
 	Collection<Film> getCommonLikedFilms(long userId, long friendId);
+
+	/// Удаление фильма по id
+	void removeFilm(long filmId);
 }
