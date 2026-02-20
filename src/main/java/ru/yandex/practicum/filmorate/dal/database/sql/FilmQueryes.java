@@ -208,4 +208,25 @@ public class FilmQueryes {
     )
     ORDER BY likes_count DESC;
     """;
+
+	public static final String SQL_FILMS_SEARCH = """
+            SELECT f.id,
+                   f.film_name,
+                   f.description,
+                   f.release_date,
+                   f.duration,
+                   f.mpa_id,
+                   m.mpa_name,
+                   gof.genre_id,
+                   dof.director_id,
+                   l.user_id
+            FROM films f
+            LEFT JOIN mpa m ON f.mpa_id = m.id
+            LEFT JOIN genres_of_films gof ON f.id = gof.film_id
+            LEFT JOIN directors_of_films dof ON f.id = dof.film_id
+            LEFT JOIN directors d ON dof.director_id = d.id
+            LEFT JOIN likes l ON f.id = l.film_id
+            WHERE %s
+            ORDER BY (SELECT COUNT(*) FROM likes WHERE film_id = f.id) DESC, f.id ASC;
+            """;
 }
