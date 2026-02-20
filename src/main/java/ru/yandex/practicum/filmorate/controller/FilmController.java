@@ -38,7 +38,7 @@ public class FilmController {
 
     @GetMapping("/common")
     public Collection<FilmDto> getCommonLikedFilms(@RequestParam(required = true) Long userId,
-                                       @RequestParam(required = true) Long friendId) {
+                                                   @RequestParam(required = true) Long friendId) {
         return filmService.getCommonLikedFilms(userId, friendId);
     }
 
@@ -70,15 +70,14 @@ public class FilmController {
     public void deleteLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.changeLike(LikeAction.REMOVE, filmId, userId);
     }
+
     @GetMapping("/search")
     public Collection<FilmDto> search(@RequestParam String query, @RequestParam String by) {
         return filmService.search(query, by);
     }
 
-
     @DeleteMapping("/{filmId}")
     public void deleteFilm(@PathVariable long filmId) {
         filmService.remove(filmId);
-      
     }
 }
