@@ -213,4 +213,21 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	public Collection<Film> getCommonLikedFilms(long userId, long friendId) {
 		return findManyFilms(SQL_FILMS_FIND_COMMON_LIKED, userId, friendId);
 	}
+
+	@Override
+	public Collection<Film> search(String query, String by) {
+		String searchPattern = "%" + query.toLowerCase() + "%";
+		String condition;
+
+		if (by.contains("director") && by.contains("title")) {
+			condition = "(LOWER(f.film_name) LIKE ? OR LOWER(d.director_name) LIKE ?)";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern, searchPattern);
+		} else if (by.contains("director")) {
+			condition = "LOWER(d.director_name) LIKE ?";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern);
+		} else {
+			condition = "LOWER(f.film_name) LIKE ?";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern);
+		}
+	}
 }

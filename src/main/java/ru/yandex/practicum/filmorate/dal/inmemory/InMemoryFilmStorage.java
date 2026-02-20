@@ -86,4 +86,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 	public Collection<Film> getCommonLikedFilms(long userId, long friendId) {
 		throw new MethodNotImplementedException();
 	}
+
+	@Override
+	public Collection<Film> search(String query, String by) {
+		throw new ru.yandex.practicum.filmorate.exception.MethodNotImplementedException();
+	}
 }

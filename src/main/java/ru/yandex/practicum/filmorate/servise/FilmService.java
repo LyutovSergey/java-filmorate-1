@@ -305,4 +305,16 @@ public class FilmService {
 		String updatedData = String.join(", ", updatedFields);
 		log.info("Данные для обновления: [{}]", updatedData);
 	}
+
+	public Collection<FilmDto> search(String query, String by) {
+		log.info("Запрос на поиск фильмов: query='{}', by='{}'", query, by);
+		return filmStorage.search(query, by).stream()
+				.map(film -> FilmMapper.mapToFilmDto(
+						film,
+						mpas.get(film.getMpaId()),
+						getGenresByIds(film.getGenreIds()),
+						getDirectorsByIds(film.getDirectorIds())
+				))
+				.toList();
+	}
 }

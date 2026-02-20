@@ -43,4 +43,6 @@ public interface FilmStorage {
 	Map<Long, Set<Long>> getAllLikes();
 
 	Collection<Film> getCommonLikedFilms(long userId, long friendId);
+
+	Collection<Film> search(String query, String by);
 }

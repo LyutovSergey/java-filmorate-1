@@ -70,4 +70,12 @@ public class FilmController {
     public void deleteLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.changeLike(LikeAction.REMOVE, filmId, userId);
     }
+
+    @GetMapping("/search")
+    public Collection<FilmDto> search(
+            @RequestParam String query,
+            @RequestParam String by
+    ) {
+        return filmService.search(query, by);
+    }
 }
