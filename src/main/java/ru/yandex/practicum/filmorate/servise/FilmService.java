@@ -13,8 +13,8 @@ import ru.yandex.practicum.filmorate.dto.request.update.FilmUpdateRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotValidException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.servise.util.FilmSortingAction;
 import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.servise.util.FilmSortingAction;
 import ru.yandex.practicum.filmorate.servise.util.LikeAction;
 
 import java.util.*;
@@ -58,8 +58,14 @@ public class FilmService {
 
 	public Collection<FilmDto> getSortedFilmsOfDirector(Integer directorId, String sortBy) {
 		log.info("Получение фильмов по режиссеру");
+		if (directorId <= 0) {
+			throw new ParameterNotValidException(directorId.toString(), "должен быть положительным числом.");
+		}
+
+		Collection<Film> films;
+
 		if (sortBy == null) {
-			return filmStorage.getALLFilmsOfDirector(directorId).stream()
+			return getSortedFilmDtosOfDirector(directorId).stream()
 					.map(film -> FilmMapper.mapToFilmDto(
 									film,
 									mpas.get(film.getMpaId()),
@@ -83,8 +89,10 @@ public class FilmService {
 			);
 		};
 
-		return filmStorage.getALLFilmsOfDirector(directorId).stream()
-				.sorted(comparator)
+		films = getSortedFilmDtosOfDirector(directorId).stream()
+				.sorted(comparator).toList();
+
+		return films.stream()
 				.map(film -> FilmMapper.mapToFilmDto(
 								film,
 								mpas.get(film.getMpaId()),
@@ -92,6 +100,17 @@ public class FilmService {
 								getDirectorsByIds(film.getDirectorIds())
 						)
 				).toList();
+	}
+
+	private Collection<Film> getSortedFilmDtosOfDirector(Integer directorId) {
+		Collection<Film> films = filmStorage.getALLFilmsOfDirector(directorId);
+
+		if (films.isEmpty()) {
+			throw new NotFoundException("Фильмы с этим режиссером" +
+					" найдены, попробуйте изменить режиссера или параметры сортировки");
+		}
+
+		return films;
 	}
 
 	public void changeLike(LikeAction action, Long filmId, Long userId) {

@@ -79,17 +79,13 @@ public final class FilmMapper {
 			film.setMpaId(request.getMpa().getId());
 		}
 
-		if (request.hasGenres()) {
 			film.setGenreIds(request.getGenres().stream()
 					.map(Genre::getId)
 					.collect(Collectors.toSet()));
-		}
 
-		if (request.hasDirectors()) {
 			film.setDirectorIds(request.getDirectors().stream()
 					.map(Director::getId)
 					.collect(Collectors.toSet()));
-		}
 
 		return film;
 	}

@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -33,11 +34,9 @@ public class FilmUpdateRequest {
 	@DurationMin(minutes = 1, message = "Продолжительность фильма должна быть положительным числом.")
 	private Duration duration;
 
-	@Size(min = 1, message = "Должен быть указан хотябы один жанр.")
-	private Set<Genre> genres;
+	private Set<Genre> genres = new HashSet<>();
 
-	@Size(min = 1, message = "Должен быть указан хотябы один режиссер.")
-	private Set<Director> directors;
+	private Set<Director> directors = new HashSet<>();
 
 	private Mpa mpa;
 
