@@ -11,25 +11,24 @@ import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
-@Jacksonized
 @EqualsAndHashCode(of = "id")
+@Jacksonized
 public class User {
 
-    private Long id;
-    private String name;
-    private String login;
-    private String email;
-    private LocalDate birthday;
+	private Long id;
+	private String name;
+	private String login;
+	private String email;
+	private LocalDate birthday;
 
-    @Builder.Default
-    private Set<Long> friendsIds = new HashSet<>();
+	@Builder.Default
+	private Set<Long> friendsIds = new HashSet<>();
 
-    public void addFriendId(Long id) {
-        friendsIds.add(id);
-    }
+	public void addFriendId(Long id) {
+		friendsIds.add(id);
+	}
 
-    public void removeFriends(Long id) {
-        friendsIds.remove(id);
-    }
-
+	public void removeFriends(Long id) {
+		friendsIds.remove(id);
+	}
 }

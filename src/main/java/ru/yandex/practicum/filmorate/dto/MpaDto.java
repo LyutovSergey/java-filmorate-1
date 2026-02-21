@@ -8,5 +8,4 @@ public class MpaDto extends Mpa {
 	public MpaDto(int id, String name) {
 		super(id, name);
 	}
-
 }

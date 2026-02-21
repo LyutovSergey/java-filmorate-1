@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.servise.util;
+package ru.yandex.practicum.filmorate.service.util;
 
 import lombok.Getter;
 

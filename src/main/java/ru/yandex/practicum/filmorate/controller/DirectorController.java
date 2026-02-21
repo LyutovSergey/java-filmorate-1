@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.request.create.DirectorCreateRequest;
 import ru.yandex.practicum.filmorate.dto.request.update.DirectorUpdateRequest;
-import ru.yandex.practicum.filmorate.servise.DirectorService;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import java.util.Collection;
 
-@RestController
 @RequestMapping("/directors")
+@RestController
 @RequiredArgsConstructor
 public class DirectorController {
 	private final DirectorService directorService;

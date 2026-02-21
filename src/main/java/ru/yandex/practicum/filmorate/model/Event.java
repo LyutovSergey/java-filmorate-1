@@ -12,10 +12,10 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
-    private Long eventId;
-    private Long userId;
-    private Instant timestamp;
-    private EventType eventType;
-    private Operation operation;
-    private Long entityId;
+	private Long eventId;
+	private Long userId;
+	private Instant timestamp;
+	private EventType eventType;
+	private Operation operation;
+	private Long entityId;
 }

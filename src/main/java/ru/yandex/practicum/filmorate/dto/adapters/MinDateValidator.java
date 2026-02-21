@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dto.adapters;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -18,6 +19,7 @@ public class MinDateValidator implements ConstraintValidator<MinDate, LocalDate>
 
 	/**
 	 * Инициализирует валидатор минимальным значением даты, заданным в аннотации.
+	 *
 	 * @param constraintAnnotation аннотация @MinDate
 	 */
 	@Override
@@ -28,7 +30,8 @@ public class MinDateValidator implements ConstraintValidator<MinDate, LocalDate>
 	/**
 	 * Проверяет, что указанная дата не меньше минимальной даты.
 	 * Если проверяемая дата равна null, считается, что проверка прошла успешно.
-	 * @param value проверяемая дата
+	 *
+	 * @param value   проверяемая дата
 	 * @param context контекст валидации
 	 * @return true, если дата не меньше минимальной или равна null, иначе false
 	 */

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.servise;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotValidException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.servise.util.FilmSortingAction;
-import ru.yandex.practicum.filmorate.servise.util.LikeAction;
+import ru.yandex.practicum.filmorate.service.util.FilmSortingAction;
+import ru.yandex.practicum.filmorate.service.util.LikeAction;
 
 import java.util.*;
 

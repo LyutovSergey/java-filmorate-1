@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 
 @SpringBootApplication(exclude = {HibernateJpaAutoConfiguration.class})
 public class FilmorateApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(FilmorateApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(FilmorateApplication.class, args);
+	}
 }

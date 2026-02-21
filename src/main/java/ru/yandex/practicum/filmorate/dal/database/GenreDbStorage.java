@@ -8,7 +8,10 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.GenreStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @Qualifier("genreDbStorage")
@@ -32,9 +35,9 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 	@Override
 	public Map<Integer, Genre> getMapOfAllGenres() {
 		Map<Integer, Genre> allGenres = new HashMap<>();
-		 findAllInTable("genres")
+		findAllInTable("genres")
 				.forEach(genre -> allGenres.put(genre.getId(), genre));
-		 return allGenres;
+		return allGenres;
 	}
 
 }

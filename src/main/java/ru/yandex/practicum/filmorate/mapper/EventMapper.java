@@ -7,14 +7,14 @@ import ru.yandex.practicum.filmorate.model.Event;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
-    public static EventDto mapToEventDto(Event event) {
-        return EventDto.builder()
-                .eventId(event.getEventId())
-                .userId(event.getUserId())
-                .timestamp(event.getTimestamp().toEpochMilli())
-                .eventType(event.getEventType())
-                .operation(event.getOperation())
-                .entityId(event.getEntityId())
-                .build();
-    }
+	public static EventDto mapToEventDto(Event event) {
+		return EventDto.builder()
+				.eventId(event.getEventId())
+				.userId(event.getUserId())
+				.timestamp(event.getTimestamp().toEpochMilli())
+				.eventType(event.getEventType())
+				.operation(event.getOperation())
+				.entityId(event.getEntityId())
+				.build();
+	}
 }

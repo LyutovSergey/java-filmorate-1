@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.MpaDto;
-import ru.yandex.practicum.filmorate.servise.MpaServise;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.Collection;
 
-@RestController
 @RequestMapping("/mpa")
+@RestController
 @RequiredArgsConstructor
 public class MpaController {
-	private final MpaServise mpaService;
+	private final MpaService mpaService;
 
 	@GetMapping("/{mpaId}")
 	public MpaDto getMpaById(@PathVariable long mpaId) {

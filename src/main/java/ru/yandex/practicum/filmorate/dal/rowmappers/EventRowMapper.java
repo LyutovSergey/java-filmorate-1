@@ -13,15 +13,15 @@ import java.sql.SQLException;
 @Component
 @Qualifier("eventRowMapper")
 public class EventRowMapper implements RowMapper<Event> {
-    @Override
-    public Event mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        return Event.builder()
-                .eventId(resultSet.getLong("id"))
-                .userId(resultSet.getLong("user_id"))
-                .timestamp(resultSet.getTimestamp("created_at").toInstant())
-                .eventType(EventType.valueOf(resultSet.getString("event_type")))
-                .operation(Operation.valueOf(resultSet.getString("operation")))
-                .entityId(resultSet.getLong("entity_id"))
-                .build();
-    }
+	@Override
+	public Event mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+		return Event.builder()
+				.eventId(resultSet.getLong("id"))
+				.userId(resultSet.getLong("user_id"))
+				.timestamp(resultSet.getTimestamp("created_at").toInstant())
+				.eventType(EventType.valueOf(resultSet.getString("event_type")))
+				.operation(Operation.valueOf(resultSet.getString("operation")))
+				.entityId(resultSet.getLong("entity_id"))
+				.build();
+	}
 }

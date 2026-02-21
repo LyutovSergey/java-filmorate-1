@@ -11,13 +11,13 @@ import java.util.Set;
 @Data
 @Builder
 public class UserDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
-    private String name;
-    private String login;
-    private String email;
-    private LocalDate birthday;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private long id;
+	private String name;
+	private String login;
+	private String email;
+	private LocalDate birthday;
 
-    @Builder.Default
-    private Set<Long> friends = new HashSet<>();
+	@Builder.Default
+	private Set<Long> friends = new HashSet<>();
 }

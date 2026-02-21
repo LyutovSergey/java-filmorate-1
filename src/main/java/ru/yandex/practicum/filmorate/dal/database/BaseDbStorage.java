@@ -70,14 +70,14 @@ public class BaseDbStorage<T> {
 		}
 	}
 
-    protected void updateWithControl(String query, Object... params) {
-        int rowsUpdated = jdbc.update(query, params);
-        if (rowsUpdated == 0) {
-            throw new InternalServerException("Не удалось обновить данные");
-        }
-    }
+	protected void updateWithControl(String query, Object... params) {
+		int rowsUpdated = jdbc.update(query, params);
+		if (rowsUpdated == 0) {
+			throw new InternalServerException("Не удалось обновить данные");
+		}
+	}
 
-    protected List<T> findManyByQuery(String query, Object... params) {
-        return jdbc.query(query, rowMapper, params);
-    }
+	protected List<T> findManyByQuery(String query, Object... params) {
+		return jdbc.query(query, rowMapper, params);
+	}
 }

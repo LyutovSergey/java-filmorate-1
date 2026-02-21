@@ -9,11 +9,11 @@ import ru.yandex.practicum.filmorate.model.Operation;
 @Data
 @Builder
 public class EventDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long eventId;
-    private Long userId;
-    private Long timestamp;
-    private EventType eventType;
-    private Operation operation;
-    private Long entityId;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long eventId;
+	private Long userId;
+	private Long timestamp;
+	private EventType eventType;
+	private Operation operation;
+	private Long entityId;
 }

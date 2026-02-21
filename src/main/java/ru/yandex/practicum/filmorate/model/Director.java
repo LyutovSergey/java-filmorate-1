@@ -9,9 +9,9 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder(toBuilder = true)
-@Jacksonized
 @EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Jacksonized
 public class Director {
 	Integer id;
 	String name;

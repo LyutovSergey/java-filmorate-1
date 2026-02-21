@@ -7,9 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface MpaStorage {
+
+	/// Получить МППА рейтинг по id
 	Optional<Mpa> getMpaById(long mpaId);
 
+	/// Получить список всех МППА рейтингов
 	Collection<Mpa> getAllMpa();
 
+	/// Получить матрицу МППА рейтингов и их id
 	Map<Integer, Mpa> getMapOfAllMpa();
 }

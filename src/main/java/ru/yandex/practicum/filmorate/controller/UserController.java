@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.EventDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.dto.request.create.UserCreateRequest;
 import ru.yandex.practicum.filmorate.dto.request.update.UserUpdateRequest;
-import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.servise.util.FriendsAction;
-import ru.yandex.practicum.filmorate.servise.UserService;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.util.FriendsAction;
 
 import java.util.Collection;
 
@@ -41,6 +41,16 @@ public class UserController {
 		return userService.getListOfMutualFriends(userId, otherId);
 	}
 
+	@GetMapping("/{id}/feed")
+	public Collection<EventDto> getUserEvents(@PathVariable(name = "id") long userId) {
+		return userService.getUserEvents(userId);
+	}
+
+	@GetMapping("/{id}/recommendations")
+	public Collection<FilmDto> getRecommendations(@PathVariable long id) {
+		return userService.getRecommendations(id);
+	}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserDto create(@RequestBody @Valid UserCreateRequest userRequest) {
@@ -60,16 +70,6 @@ public class UserController {
 	@DeleteMapping("/{userId}/friends/{friendId}")
 	public void removeFromFriends(@PathVariable long userId, @PathVariable long friendId) {
 		userService.changeFriends(FriendsAction.REMOVE, userId, friendId);
-	}
-
-	@GetMapping("/{id}/feed")
-	public Collection<EventDto> getUserEvents(@PathVariable(name = "id") long userId) {
-		return userService.getUserEvents(userId);
-	}
-
-	@GetMapping("/{id}/recommendations")
-	public Collection<FilmDto> getRecommendations(@PathVariable long id) {
-		return userService.getRecommendations(id);
 	}
 
 	@DeleteMapping("/{userId}")

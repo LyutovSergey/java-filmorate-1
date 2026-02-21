@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.dal;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public interface FilmStorage {
@@ -42,9 +42,10 @@ public interface FilmStorage {
 	/// Метод для получения матрицы лайков всех пользователей
 	Map<Long, Set<Long>> getAllLikes();
 
+	/// Получить список филиьов, которые понравились обоим пользователям
 	Collection<Film> getCommonLikedFilms(long userId, long friendId);
 
-
+	/// Поиск фильмов по названию и описанию
 	Collection<Film> search(String query, String by);
 
 	/// Удаление фильма по id

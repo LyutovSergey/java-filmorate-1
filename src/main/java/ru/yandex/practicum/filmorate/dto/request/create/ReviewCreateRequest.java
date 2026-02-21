@@ -7,16 +7,16 @@ import lombok.Data;
 
 @Data
 public class ReviewCreateRequest {
-    @NotBlank(message = "Контент отзыва не может быть пустым.")
-    @Size(max = 2048, message = "Максимальная длина отзыва — 2048 символов.")
+	@NotBlank(message = "Контент отзыва не может быть пустым.")
+	@Size(max = 2048, message = "Максимальная длина отзыва — 2048 символов.")
     private String content;
 
-    @NotNull(message = "Тип отзыва должен быть указан.")
-    private Boolean isPositive;
+	@NotNull(message = "Тип отзыва должен быть указан.")
+	private Boolean isPositive;
 
-    @NotNull(message = "userId должен быть указан.")
-    private Long userId;
+	@NotNull(message = "userId должен быть указан.")
+	private Long userId;
 
-    @NotNull(message = "filmId должен быть указан.")
-    private Long filmId;
+	@NotNull(message = "filmId должен быть указан.")
+	private Long filmId;
 }

@@ -186,47 +186,47 @@ public class FilmQueryes {
 			""";
 
 	public static final String SQL_FILMS_FIND_COMMON_LIKED = """
-           SELECT f.id,
-           f.film_name,
-           f.description,
-           f.release_date,
-           f.duration,
-           f.mpa_id,
-           l_all.user_id,
-           g.genre_id,
-           d.director_id,
-           (SELECT COUNT(*) FROM likes WHERE film_id = f.id) as likes_count
-    FROM films f
-    LEFT JOIN likes l_all ON f.id = l_all.film_id
-    LEFT JOIN genres_of_films g ON f.id = g.film_id
-    LEFT JOIN directors_of_films d ON f.id = d.film_id
-    WHERE f.id IN (
-        SELECT l1.film_id
-        FROM likes l1
-        JOIN likes l2 ON l1.film_id = l2.film_id
-        WHERE l1.user_id = ? AND l2.user_id = ?
-    )
-    ORDER BY likes_count DESC;
-    """;
+			       SELECT f.id,
+			       f.film_name,
+			       f.description,
+			       f.release_date,
+			       f.duration,
+			       f.mpa_id,
+			       l_all.user_id,
+			       g.genre_id,
+			       d.director_id,
+			       (SELECT COUNT(*) FROM likes WHERE film_id = f.id) as likes_count
+			FROM films f
+			LEFT JOIN likes l_all ON f.id = l_all.film_id
+			LEFT JOIN genres_of_films g ON f.id = g.film_id
+			LEFT JOIN directors_of_films d ON f.id = d.film_id
+			WHERE f.id IN (
+			    SELECT l1.film_id
+			    FROM likes l1
+			    JOIN likes l2 ON l1.film_id = l2.film_id
+			    WHERE l1.user_id = ? AND l2.user_id = ?
+			)
+			ORDER BY likes_count DESC;
+			""";
 
 	public static final String SQL_FILMS_SEARCH = """
-            SELECT f.id,
-                   f.film_name,
-                   f.description,
-                   f.release_date,
-                   f.duration,
-                   f.mpa_id,
-                   m.mpa_name,
-                   gof.genre_id,
-                   dof.director_id,
-                   l.user_id
-            FROM films f
-            LEFT JOIN mpa m ON f.mpa_id = m.id
-            LEFT JOIN genres_of_films gof ON f.id = gof.film_id
-            LEFT JOIN directors_of_films dof ON f.id = dof.film_id
-            LEFT JOIN directors d ON dof.director_id = d.id
-            LEFT JOIN likes l ON f.id = l.film_id
-            WHERE %s
-            ORDER BY (SELECT COUNT(*) FROM likes WHERE film_id = f.id) DESC, f.id ASC;
-            """;
+			SELECT f.id,
+			       f.film_name,
+			       f.description,
+			       f.release_date,
+			       f.duration,
+			       f.mpa_id,
+			       m.mpa_name,
+			       gof.genre_id,
+			       dof.director_id,
+			       l.user_id
+			FROM films f
+			LEFT JOIN mpa m ON f.mpa_id = m.id
+			LEFT JOIN genres_of_films gof ON f.id = gof.film_id
+			LEFT JOIN directors_of_films dof ON f.id = dof.film_id
+			LEFT JOIN directors d ON dof.director_id = d.id
+			LEFT JOIN likes l ON f.id = l.film_id
+			WHERE %s
+			ORDER BY (SELECT COUNT(*) FROM likes WHERE film_id = f.id) DESC, f.id ASC;
+			""";
 }
