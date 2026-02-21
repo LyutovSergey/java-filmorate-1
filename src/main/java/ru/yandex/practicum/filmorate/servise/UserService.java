@@ -128,9 +128,7 @@ public class UserService {
 
 	public void remove(long userId) {
 		log.info("Удаление пользователя с id={}.", userId);
-		if (userStorage.checkUserIsNotPresent(userId)) {
-			throw new NotFoundException("Пользователь с id=" + userId + " не найден.");
-		}
+		easyCheckUser(userId);
 		userStorage.removeUser(userId);
 	}
 
@@ -166,6 +164,7 @@ public class UserService {
 	}
 
 	public Collection<EventDto> getUserEvents(long userId) {
+		easyCheckUser(userId);
 		return eventService.getUserEvents(userId);
 	}
 
