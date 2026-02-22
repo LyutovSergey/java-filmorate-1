@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.dto.request.create.FilmCreateRequest;
 import ru.yandex.practicum.filmorate.dto.request.update.FilmUpdateRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotValidException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.util.FilmSortingAction;
@@ -193,7 +194,9 @@ public class FilmService {
 
 	public Collection<FilmDto> getCommonLikedFilms(Long userId, Long friendId) {
 		log.info("Получение общих с другом фильмов userId={}, friendId={}", userId, friendId);
-
+		if (Objects.equals(userId, friendId)) {
+			throw new ValidationException("У пользователей должны быть разные id.");
+		}
 		if (userStorage.checkUserIsNotPresent(userId)) {
 			throw new NotFoundException("Пользователь с id=" + userId + " не найден.");
 		}
@@ -334,6 +337,14 @@ public class FilmService {
 
 	public Collection<FilmDto> search(String query, String by) {
 		log.info("Запрос на поиск фильмов: query='{}', by='{}'", query, by);
+		if (query == null || query.isBlank()) {
+			throw new ParameterNotValidException("query", "Поисковая строка не может быть пустой.");
+		}
+		if (by == null || by.isBlank()) {
+			throw new ParameterNotValidException("by",
+					"Параметр поля для поиска должен содержать 'title' или 'director'");
+		}
+
 		return filmStorage.search(query, by).stream()
 				.map(film -> FilmMapper.mapToFilmDto(
 						film,

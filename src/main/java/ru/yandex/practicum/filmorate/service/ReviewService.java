@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -56,10 +57,7 @@ public class ReviewService {
 
 	public ReviewDto updateReview(ReviewUpdateRequest request) {
 		log.info("Обновление данных об отзыве с id={}", request.getReviewId());
-
-		Review oldReview = reviewStorage.findReviewById(request.getReviewId())
-				.orElseThrow(() -> new NotFoundException("Отзыв с id=" + request.getReviewId() + " не найден."));
-
+		Review oldReview = findReview(request.getReviewId());
 		Review newReview = ReviewMapper.updateReviewFields(oldReview, request);
 		newReview = reviewStorage.updateReview(newReview);
 		eventService.addUserEvent(newReview.getUserId(), EventType.REVIEW, Operation.UPDATE, newReview.getId());
@@ -77,9 +75,7 @@ public class ReviewService {
 
 	public ReviewDto findReviewById(Long id) {
 		log.info("Получение отзыва с id={}", id);
-		return reviewStorage.findReviewById(id)
-				.map(ReviewMapper::mapToReviewDto)
-				.orElseThrow(() -> new NotFoundException("Отзыв с id=" + id + " не найден."));
+		return ReviewMapper.mapToReviewDto(findReview(id));
 	}
 
 	public Collection<ReviewDto> findReviewsByFilmId(Long filmId, int count) {
@@ -102,7 +98,6 @@ public class ReviewService {
 			reviewStorage.removeReviewDislike(id, userId);
 			reviewStorage.addReviewLike(id, userId);
 		}
-
 	}
 
 	public void addReviewDislike(Long id, Long userId) {
@@ -132,6 +127,11 @@ public class ReviewService {
 		checkReviewExists(id);
 		checkUserExists(userId);
 		reviewStorage.removeReviewDislike(id, userId);
+	}
+
+	private Review findReview(long reviewId) {
+		return reviewStorage.findReviewById(reviewId)
+				.orElseThrow(() -> new NotFoundException("Отзыв с id=" + reviewId + " не найден."));
 	}
 
 	private void checkFilmExists(Long filmId) {
