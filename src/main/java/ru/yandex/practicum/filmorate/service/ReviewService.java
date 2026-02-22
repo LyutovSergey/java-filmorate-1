@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
