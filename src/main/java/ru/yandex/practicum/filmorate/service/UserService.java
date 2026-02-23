@@ -241,7 +241,7 @@ public class UserService {
 				.sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
 				.limit(15)
 				.map(Map.Entry::getKey)
-				.collect(Collectors.toList());
+				.toList();
 
 		Set<Long> recommendedFilmIds = new HashSet<>();
 		for (Long simId : similarUserIds) {
