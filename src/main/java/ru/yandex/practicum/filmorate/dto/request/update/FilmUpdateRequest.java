@@ -6,11 +6,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.time.DurationMin;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -32,8 +34,9 @@ public class FilmUpdateRequest {
 	@DurationMin(minutes = 1, message = "Продолжительность фильма должна быть положительным числом.")
 	private Duration duration;
 
-	@Size(min = 1, message = "Должен быть указан хотябы один жанр.")
-	private Set<Genre> genres;
+	private Set<Genre> genres = new HashSet<>();
+
+	private Set<Director> directors = new HashSet<>();
 
 	private Mpa mpa;
 
@@ -55,6 +58,10 @@ public class FilmUpdateRequest {
 
 	public boolean hasGenres() {
 		return genres != null;
+	}
+
+	public boolean hasDirectors() {
+		return directors != null;
 	}
 
 	public boolean hasMpa() {

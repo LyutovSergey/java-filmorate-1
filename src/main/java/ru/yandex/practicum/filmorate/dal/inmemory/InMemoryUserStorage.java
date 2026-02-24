@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.UserStorage;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplementedException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.servise.util.IdentifyService;
+import ru.yandex.practicum.filmorate.service.util.IdentifyService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -70,6 +70,11 @@ public class InMemoryUserStorage implements UserStorage {
 
 	@Override
 	public Collection<Long> getFriendIds(long userId) {
+		throw new MethodNotImplementedException();
+	}
+
+	@Override
+	public void removeUser(long userId) {
 		throw new MethodNotImplementedException();
 	}
 

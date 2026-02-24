@@ -21,10 +21,7 @@ import static ru.yandex.practicum.filmorate.dal.database.sql.FilmQueryes.*;
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
 	@Autowired
-	public FilmDbStorage(
-			JdbcTemplate jdbc,
-			@Qualifier("filmRowMapper") RowMapper<Film> mapper
-	) {
+	public FilmDbStorage(JdbcTemplate jdbc, @Qualifier("filmRowMapper") RowMapper<Film> mapper) {
 		super(jdbc, mapper);
 	}
 
@@ -39,13 +36,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 				film.getDuration().toMinutes(),
 				film.getMpaId()
 		);
-
 		film.setId(id);
 		insertGenreIds(film);
-		return film;
+		insertDirectorIds(film);
+		return findById(id).get();
 	}
 
 	@Override
+	@Transactional
 	public Film updateFilm(Film film) {
 		updateWithControl(
 				SQL_FILMS_UPDATE,
@@ -56,7 +54,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 				film.getMpaId(),
 				film.getId()
 		);
-		return film;
+		insertGenreIds(film);
+		insertDirectorIds(film);
+		return findById(film.getId()).get();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	public Optional<Film> findById(long filmId) {
 		Optional<Film> filmOptional = findOneByIdInTable(filmId, "films");
 		filmOptional.ifPresent(film -> film.setGenreIds(getGenreIdsByFilmId(filmId)));
-
+		filmOptional.ifPresent(film -> film.setDirectorIds(getDirectorIdsByFilmId(filmId)));
 		return filmOptional;
 	}
 
@@ -84,8 +84,33 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 	}
 
 	@Override
+	public Collection<Film> getALLFilmsOfDirector(Integer directorId) {
+		return findManyFilms(SQL_FILMS_FIND_ALL_OF_DIRECTOR, directorId);
+	}
+
+	@Override
 	public Collection<Film> getTop(int top) {
 		return findManyFilms(SQL_FILMS_FIND_TOP, top);
+	}
+
+	@Override
+	public Collection<Film> getTopByFilters(Integer top, Integer genreId, String year) {
+		Collection<Film> films;
+		if (genreId != null && year != null && !year.isEmpty()) {
+			films = findManyByQuery(SQL_FILMS_FIND_TOP_BY_GENRE_AND_YEAR, Integer.parseInt(year), genreId, top);
+		} else if (year != null && !year.isEmpty()) {
+			films = findManyByQuery(SQL_FILMS_FIND_TOP_BY_YEAR, Integer.parseInt(year), top);
+		} else if (genreId != null) {
+			films = findManyByQuery(SQL_FILMS_FIND_TOP_BY_GENRES, genreId, top);
+		} else {
+			films = findManyByQuery(SQL_FILMS_FIND_TOP, top);
+		}
+		return films.stream().peek(film -> {
+			Set<Integer> genres = getGenreIdsByFilmId(film.getId());
+			film.setGenreIds(new HashSet<>(genres));
+			Set<Integer> directors = getDirectorIdsByFilmId(film.getId());
+			film.setDirectorIds(new HashSet<>(directors));
+		}).toList();
 	}
 
 	@Override
@@ -93,16 +118,60 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 		return checkIdIsNotPresentInTable(filmId, "films");
 	}
 
-	private void insertGenreIds(Film film) {
-		Set<Integer> genreIds = film.getGenreIds();
-		if (genreIds.isEmpty()) {
-			return;
+	@Override
+	public Map<Long, Set<Long>> getAllLikes() {
+		String sql = "SELECT user_id, film_id FROM likes";
+		Map<Long, Set<Long>> allLikes = new HashMap<>();
+		jdbc.query(sql, (rs) -> {
+			long userId = rs.getLong("user_id");
+			long filmId = rs.getLong("film_id");
+			allLikes.computeIfAbsent(userId, k -> new HashSet<>()).add(filmId);
+		});
+		return allLikes;
+	}
+
+	@Override
+	public Collection<Film> getCommonLikedFilms(long userId, long friendId) {
+		return findManyFilms(SQL_FILMS_FIND_COMMON_LIKED, userId, friendId);
+	}
+
+	@Override
+	public Collection<Film> search(String query, String by) {
+		String searchPattern = "%" + query.toLowerCase() + "%";
+		String condition;
+		if (by.contains("director") && by.contains("title")) {
+			condition = "(LOWER(f.film_name) LIKE ? OR LOWER(d.director_name) LIKE ?)";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern, searchPattern);
+		} else if (by.contains("director")) {
+			condition = "LOWER(d.director_name) LIKE ?";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern);
+		} else {
+			condition = "LOWER(f.film_name) LIKE ?";
+			return findManyFilms(String.format(SQL_FILMS_SEARCH, condition), searchPattern);
 		}
-		String placeholders = String.join(",",
-				Collections.nCopies(genreIds.size(), " (" + film.getId() + ", ?)")
-		);
-		String sql = "INSERT INTO GENRES_OF_FILMS (FILM_ID, GENRE_ID) VALUES" + placeholders;
+	}
+
+	@Override
+	public void removeFilm(long filmId) {
+		updateWithControl("DELETE FROM films WHERE id = ?", filmId);
+	}
+
+	private void insertGenreIds(Film film) {
+		jdbc.update("DELETE FROM genres_of_films WHERE film_id = ?", film.getId());
+		Set<Integer> genreIds = film.getGenreIds();
+		if (genreIds == null || genreIds.isEmpty()) return;
+		String placeholders = String.join(",", Collections.nCopies(genreIds.size(), " (" + film.getId() + ", ?)"));
+		String sql = SQL_FILMS_INSERT_GENREIDS + placeholders;
 		updateWithControl(sql, genreIds.toArray());
+	}
+
+	private void insertDirectorIds(Film film) {
+		jdbc.update("DELETE FROM directors_of_films WHERE film_id = ?", film.getId());
+		Set<Integer> directorIds = film.getDirectorIds();
+		if (directorIds == null || directorIds.isEmpty()) return;
+		String placeholders = String.join(",", Collections.nCopies(directorIds.size(), " (" + film.getId() + ", ?)"));
+		String sql = SQL_FILMS_INSERT_DIRECTORIDS + placeholders;
+		updateWithControl(sql, directorIds.toArray());
 	}
 
 	private Collection<Film> findManyFilms(String query, Object... params) {
@@ -112,27 +181,19 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 			while (rs.next()) {
 				long filmId = rs.getLong("id");
 				Film film = films.computeIfAbsent(filmId, id -> {
-
 					try {
 						return rowMapper.mapRow(rs, rowNum.getAndIncrement());
 					} catch (SQLException e) {
-						throw new InternalServerException(
-								"Не удалось получить все фильмы из базы.\n" + e.getMessage()
-						);
+						throw new InternalServerException("Не удалось получить все фильмы из базы.\n" + e.getMessage());
 					}
 				});
-
 				long userId = rs.getLong("user_id");
-				if (!rs.wasNull() && film != null) {
-					film.addLike(userId);
-				}
-
+				if (!rs.wasNull() && film != null) film.addLike(userId);
 				int genreId = rs.getInt("genre_id");
-				if (!rs.wasNull() && film != null) {
-					film.addGenreId(genreId);
-				}
+				if (!rs.wasNull() && film != null) film.addGenreId(genreId);
+				int directorId = rs.getInt("director_id");
+				if (!rs.wasNull() && film != null) film.addDirectorId(directorId);
 			}
-
 			return new ArrayList<>(films.values());
 		}, params);
 	}
@@ -141,4 +202,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 		return findColumnByQuery(SQL_FILMS_FIND_GENREIDS_BY_FILM_ID, Integer.class, filmId);
 	}
 
+	private Set<Integer> getDirectorIdsByFilmId(long filmId) {
+		return findColumnByQuery(SQL_FILMS_FIND_DIRECTORIDS_BY_FILM_ID, Integer.class, filmId);
+	}
+
+	@Override
+	public Collection<Film> getFilmsByIds(Collection<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+		String sql = String.format("""
+                SELECT f.id, f.film_name, f.description, f.release_date, f.duration, f.mpa_id,
+                       l.user_id, gof.genre_id, dof.director_id
+                FROM films f
+                LEFT JOIN likes l ON f.id = l.film_id
+                LEFT JOIN genres_of_films gof ON f.id = gof.film_id
+                LEFT JOIN directors_of_films dof ON f.id = dof.film_id
+                WHERE f.id IN (%s)
+                """, inSql);
+
+		return findManyFilms(sql, ids.toArray());
+	}
 }
